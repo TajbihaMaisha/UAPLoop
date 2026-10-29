@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center py-5">
+  <h1>401</h1>
+  <h4>Login required</h4>
+  <p>You need to log in to see this page.</p>
+  <a class="btn btn-primary" href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Login</a>
+  <a class="btn btn-outline-secondary" href="{% url 'browse' %}">Back to browse</a>
+</div>
+{% endblock %}
