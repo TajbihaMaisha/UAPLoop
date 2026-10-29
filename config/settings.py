@@ -32,7 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles'
+    'django.contrib.staticfiles',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +73,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = 'unauthorized'
 LOGIN_REDIRECT_URL = 'browse'
 LOGOUT_REDIRECT_URL = 'browse'
