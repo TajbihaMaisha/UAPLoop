@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-8 col-lg-6">
+<div class="card">
+  <div class="card-body">
+    <h2>New listing</h2>
+    <p>Your listing will appear after admin approval.</p>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <p>
+        <label for="photos">Photos (up to 5, 5 MB each):</label><br>
+        <input class="form-control" type="file" name="photos" id="photos" accept="image/*" multiple>
+      </p>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+  </div>
+</div>
+</div>
+</div>
+{% endblock %}

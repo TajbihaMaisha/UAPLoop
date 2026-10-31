@@ -45,3 +45,16 @@ def detail(request, pk):
     }
     context.update(review_context(request, listing))
     return render(request, 'catalog/detail.html', context)
+
+@login_required
+def new_listing(request):
+    form = ListingForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        listing = form.save(commit=False)
+        listing.seller = request.user
+        listing.save()
+        for position, photo in enumerate(request.FILES.getlist('photos')):
+            ListingImage.objects.create(listing=listing, image=photo, position=position)
+        messages.success(request, 'Listing submitted. It will appear after admin approval.')
+        return redirect('my_listings')
+    return render(request, 'catalog/new.html', {'form': form})
