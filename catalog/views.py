@@ -31,3 +31,17 @@ def browse(request):
         'query': query.urlencode(),
     }
     return render(request, 'catalog/browse.html', context)
+
+def detail(request, pk):
+    listing = get_object_or_404(Listing.objects.public(), pk=pk)
+    my_request = None
+    if request.user.is_authenticated:
+        my_request = listing.requests.filter(buyer=request.user).first()
+    context = {
+        'listing': listing,
+        'my_request': my_request,
+        'is_seller': listing.seller == request.user,
+        'request_form': BuyRequestForm(listing=listing),
+    }
+    context.update(review_context(request, listing))
+    return render(request, 'catalog/detail.html', context)
