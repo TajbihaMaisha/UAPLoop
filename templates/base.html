@@ -17,7 +17,13 @@
     </button>
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto">
+         <li class="nav-item"><a class="nav-link" href="{% url 'browse' %}">Browse</a></li>
         {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'browse' %}">Browse</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'new_listing' %}">New listing</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'my_listings' %}">My listings</a></li>
+
+
         <li class="nav-item">
           <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
