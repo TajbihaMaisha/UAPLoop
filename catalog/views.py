@@ -82,3 +82,14 @@ def remove_listing(request, pk):
         messages.success(request, 'Listing removed.')
         return redirect('my_listings')
     return render(request, 'catalog/remove.html', {'listing': listing})
+@login_required
+def request_buy(request, pk):
+    listing = get_object_or_404(Listing.objects.public(), pk=pk)
+    if request.method == 'POST' and not listing.is_sold and listing.seller != request.user:
+        form = BuyRequestForm(request.POST, listing=listing)
+        if form.is_valid():
+            BuyRequest.objects.get_or_create(listing=listing, buyer=request.user, defaults={'amount': form.cleaned_data['amount']})
+            messages.success(request, 'Request sent. The seller contact is shown below.')
+        else:
+            messages.error(request, 'Enter a valid amount.')
+    return redirect('detail', pk=pk)
