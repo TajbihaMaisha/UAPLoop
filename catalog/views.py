@@ -7,6 +7,7 @@ from .forms import BuyRequestForm, ListingForm
 from reviews.views import review_context
 from .models import BuyRequest, Category, Listing, ListingImage
 
+
 def browse(request):
     listings = Listing.objects.public().select_related('category').prefetch_related('images')
     category = request.GET.get('category', '')
@@ -32,6 +33,7 @@ def browse(request):
     }
     return render(request, 'catalog/browse.html', context)
 
+
 def detail(request, pk):
     listing = get_object_or_404(Listing.objects.public(), pk=pk)
     my_request = None
@@ -46,6 +48,38 @@ def detail(request, pk):
     context.update(review_context(request, listing))
     return render(request, 'catalog/detail.html', context)
 
+
+@login_required
+def request_buy(request, pk):
+    listing = get_object_or_404(Listing.objects.public(), pk=pk)
+    if request.method == 'POST' and not listing.is_sold and listing.seller != request.user:
+        form = BuyRequestForm(request.POST, listing=listing)
+        if form.is_valid():
+            BuyRequest.objects.get_or_create(listing=listing, buyer=request.user, defaults={'amount': form.cleaned_data['amount']})
+            messages.success(request, 'Request sent. The seller contact is shown below.')
+        else:
+            messages.error(request, 'Enter a valid amount.')
+    return redirect('detail', pk=pk)
+
+
+@login_required
+def listing_requests(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    return render(request, 'catalog/requests.html', {'listing': listing, 'buy_requests': listing.requests.select_related('buyer')})
+
+
+@login_required
+def accept_request(request, pk):
+    buy_request = get_object_or_404(BuyRequest, pk=pk, listing__seller=request.user)
+    if request.method == 'POST' and not buy_request.listing.is_sold:
+        buy_request.status = 'accepted'
+        buy_request.save()
+        buy_request.listing.is_sold = True
+        buy_request.listing.save()
+        messages.success(request, 'Request accepted. The buyer can now review this item.')
+    return redirect('listing_requests', pk=buy_request.listing_id)
+
+
 @login_required
 def new_listing(request):
     form = ListingForm(request.POST or None, request.FILES or None)
@@ -59,10 +93,12 @@ def new_listing(request):
         return redirect('my_listings')
     return render(request, 'catalog/new.html', {'form': form})
 
+
 @login_required
 def my_listings(request):
     listings = Listing.objects.filter(seller=request.user)
     return render(request, 'catalog/mine.html', {'listings': listings})
+
 
 @login_required
 def mark_sold(request, pk):
@@ -72,6 +108,8 @@ def mark_sold(request, pk):
         listing.save()
         messages.success(request, 'Listing marked as %s.' % listing.done_text().lower())
     return redirect('my_listings')
+
+
 @login_required
 def remove_listing(request, pk):
     listing = get_object_or_404(Listing, pk=pk, seller=request.user)
@@ -82,19 +120,3 @@ def remove_listing(request, pk):
         messages.success(request, 'Listing removed.')
         return redirect('my_listings')
     return render(request, 'catalog/remove.html', {'listing': listing})
-@login_required
-def request_buy(request, pk):
-    listing = get_object_or_404(Listing.objects.public(), pk=pk)
-    if request.method == 'POST' and not listing.is_sold and listing.seller != request.user:
-        form = BuyRequestForm(request.POST, listing=listing)
-        if form.is_valid():
-            BuyRequest.objects.get_or_create(listing=listing, buyer=request.user, defaults={'amount': form.cleaned_data['amount']})
-            messages.success(request, 'Request sent. The seller contact is shown below.')
-        else:
-            messages.error(request, 'Enter a valid amount.')
-    return redirect('detail', pk=pk)
-
-@login_required
-def listing_requests(request, pk):
-    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
-    return render(request, 'catalog/requests.html', {'listing': listing, 'buy_requests': listing.requests.select_related('buyer')})
