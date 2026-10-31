@@ -72,3 +72,13 @@ def mark_sold(request, pk):
         listing.save()
         messages.success(request, 'Listing marked as %s.' % listing.done_text().lower())
     return redirect('my_listings')
+@login_required
+def remove_listing(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    if request.method == 'POST':
+        for image in listing.images.all():
+            image.image.delete(save=False)
+        listing.delete()
+        messages.success(request, 'Listing removed.')
+        return redirect('my_listings')
+    return render(request, 'catalog/remove.html', {'listing': listing})
