@@ -58,3 +58,8 @@ def new_listing(request):
         messages.success(request, 'Listing submitted. It will appear after admin approval.')
         return redirect('my_listings')
     return render(request, 'catalog/new.html', {'form': form})
+
+@login_required
+def my_listings(request):
+    listings = Listing.objects.filter(seller=request.user)
+    return render(request, 'catalog/mine.html', {'listings': listings})

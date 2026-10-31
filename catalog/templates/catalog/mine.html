@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>My listings</h2>
+<div class="table-responsive">
+<table class="table align-middle text-nowrap">
+  <tr><th>Title</th><th>Status</th><th>Reason</th><th>Done</th><th>Requests</th><th></th></tr>
+  {% for listing in listings %}
+  <tr>
+    <td>{{ listing.title }}</td>
+    <td>
+      <span class="badge {% if listing.status == 'approved' %}text-bg-success{% elif listing.status == 'rejected' %}text-bg-danger{% else %}text-bg-warning{% endif %}">{{ listing.get_status_display }}</span>
+    </td>
+    <td>{{ listing.reject_reason }}</td>
+    <td>
+      {% if listing.is_sold %}
+      <span class="badge text-bg-danger">{{ listing.done_text }}</span>
+      {% elif listing.status == 'approved' %}
+      <form method="post" action="{% url 'mark_sold' listing.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Mark {{ listing.done_text|lower }}</button></form>
+      {% endif %}
+    </td>
+    <td><a href="{% url 'listing_requests' listing.pk %}">{{ listing.requests.count }}</a></td>
+    <td><a href="{% url 'remove_listing' listing.pk %}">Remove</a></td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6">You have no listings.</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}
