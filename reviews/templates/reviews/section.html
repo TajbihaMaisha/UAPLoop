@@ -1,0 +1,15 @@
+<h4 class="mt-4">Reviews</h4>
+{% if can_review %}
+<form method="post" action="{% url 'add_review' listing.pk %}">{% csrf_token %}
+  {{ review_form.as_p }}
+  <button class="btn btn-primary" type="submit">Add review</button>
+</form>
+{% endif %}
+{% if my_review and my_review.status != 'approved' %}
+<p class="alert alert-warning">Your review is {{ my_review.get_status_display|lower }}. It shows publicly once an admin approves it.</p>
+{% endif %}
+{% for review in reviews %}
+<p><span class="text-warning fs-5">{{ review.get_rating_display }}</span> by {{ review.reviewer.full_name }}<br>{{ review.comment }}</p>
+{% empty %}
+<p>No reviews yet. Only buyers whose request the seller accepted can review.</p>
+{% endfor %}
