@@ -63,3 +63,12 @@ def new_listing(request):
 def my_listings(request):
     listings = Listing.objects.filter(seller=request.user)
     return render(request, 'catalog/mine.html', {'listings': listings})
+
+@login_required
+def mark_sold(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    if request.method == 'POST':
+        listing.is_sold = True
+        listing.save()
+        messages.success(request, 'Listing marked as %s.' % listing.done_text().lower())
+    return redirect('my_listings')
