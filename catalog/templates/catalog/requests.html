@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Buy requests for {{ listing.title }}</h2>
+<div class="table-responsive">
+<table class="table align-middle text-nowrap">
+  <tr><th>Buyer</th><th>Phone</th><th>Amount</th><th>Status</th><th></th><th></th></tr>
+  {% for buy_request in buy_requests %}
+  <tr>
+    <td>{{ buy_request.buyer.full_name }}</td>
+    <td>{{ buy_request.buyer.phone }}</td>
+    <td>{% if buy_request.amount %}Tk {{ buy_request.amount|floatformat:"-2" }}{% endif %}</td>
+    <td>{{ buy_request.get_status_display }}</td>
+    <td><a href="{% url 'conversation' buy_request.pk %}">Chat</a></td>
+    <td>
+      {% if buy_request.status == 'pending' and not listing.is_sold %}
+      <form method="post" action="{% url 'accept_request' buy_request.pk %}">{% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Accept</button></form>
+      {% endif %}
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6">No requests yet.</td></tr>
+  {% endfor %}
+</table>
+</div>
+<a href="{% url 'my_listings' %}">Back</a>
+{% endblock %}
