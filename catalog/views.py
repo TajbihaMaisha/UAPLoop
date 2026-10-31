@@ -93,3 +93,8 @@ def request_buy(request, pk):
         else:
             messages.error(request, 'Enter a valid amount.')
     return redirect('detail', pk=pk)
+
+@login_required
+def listing_requests(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    return render(request, 'catalog/requests.html', {'listing': listing, 'buy_requests': listing.requests.select_related('buyer')})
