@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-4"><input class="form-control" name="q" value="{{ search }}" placeholder="Search title"></div>
+  <div class="col-md-3">
+    <select class="form-select" name="category">
+      <option value="">All categories</option>
+      {% for c in categories %}
+      <option value="{{ c.slug }}" {% if c.slug == category %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select class="form-select" name="type">
+      <option value="">All types</option>
+      {% for value, label in types %}
+      <option value="{{ value }}" {% if value == listing_type %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filter</button></div>
+</form>
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 mb-3">
+  {% for listing in page %}
+  <div class="col">
+    <div class="card h-100">
+      <div class="ratio ratio-1x1">
+        {% if listing.cover %}
+        <img src="{{ listing.cover.image.url }}" class="card-img-top object-fit-cover" alt="{{ listing.title }}">
+        {% else %}
+        <div class="d-flex align-items-center justify-content-center bg-light">No photo</div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <h6 class="card-title text-break"><a href="{% url 'detail' listing.pk %}">{{ listing.title }}</a></h6>
+        <p class="card-text small">{{ listing.price_text }} <span class="badge text-bg-secondary">{{ listing.get_listing_type_display }}</span> {% if listing.is_sold %}<span class="badge text-bg-danger">{{ listing.done_text }}</span>{% endif %}</p>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p class="col-12">No listings found.</p>
+  {% endfor %}
+</div>
+<p>
+  {% if page.has_previous %}<a class="btn btn-outline-primary" href="?{{ query }}&page={{ page.previous_page_number }}">Previous</a>{% endif %}
+  {% if page.has_next %}<a class="btn btn-outline-primary" href="?{{ query }}&page={{ page.next_page_number }}">Next</a>{% endif %}
+</p>
+{% endblock %}
