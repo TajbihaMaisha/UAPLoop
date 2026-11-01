@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Inbox</h2>
+<p>Each item you requested or sold has its own conversation.</p>
+<div class="table-responsive">
+<table class="table align-middle text-nowrap">
+  <tr><th>Item</th><th>You are</th><th>Other person</th><th></th></tr>
+  {% for buy_request in conversations %}
+  <tr>
+    <td>{{ buy_request.listing.title }}</td>
+    {% if buy_request.buyer == user %}
+    <td>Buyer</td><td>{{ buy_request.listing.seller.full_name }}</td>
+    {% else %}
+    <td>Seller</td><td>{{ buy_request.buyer.full_name }}</td>
+    {% endif %}
+    <td><a href="{% url 'conversation' buy_request.pk %}">Open chat</a></td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="4">No conversations yet. A chat opens when a buyer sends a buy request.</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}
