@@ -77,6 +77,7 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = 'accounts.User'
+
 LOGIN_URL = 'unauthorized'
 LOGIN_REDIRECT_URL = 'browse'
 LOGOUT_REDIRECT_URL = 'browse'
