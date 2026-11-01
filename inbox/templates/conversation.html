@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-break">{{ buy_request.listing.title }}</h2>
+<p>
+  Chat with {{ other.full_name }} ({{ other.phone }})<br>
+  Buyer request{% if buy_request.amount %}: Tk {{ buy_request.amount|floatformat:"-2" }}{% endif %}
+  | <a href="{% url 'detail' buy_request.listing.pk %}">View item</a>
+  | <a href="{% url 'inbox' %}">Back to inbox</a>
+</p>
+<div class="card mb-3">
+  <div class="card-body" id="chat" data-url="{% url 'new_messages' buy_request.pk %}" data-after="{{ last_id }}">
+    {% for message in chat_messages %}
+    <p class="text-break {% if message.sender == user %}text-end{% endif %}">
+      <strong>{% if message.sender == user %}You{% else %}{{ message.sender.full_name }}{% endif %}</strong>
+      <small>{{ message.created_at|date:"d M, H:i" }}</small><br>
+      {{ message.text|linebreaksbr }}
+    </p>
+    {% empty %}
+    <p class="mb-0" id="empty-note">No messages yet. Say hello.</p>
+    {% endfor %}
+  </div>
+</div>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn btn-primary" type="submit">Send</button>
+</form>
+<script>
+var chat = document.getElementById('chat');
+var after = chat.dataset.after;
+
+function addMessage(message) {
+  var p = document.createElement('p');
+  if (message.mine) {
+    p.className = 'text-break text-end';
+  } else {
+    p.className = 'text-break';
+  }
+  var name = document.createElement('strong');
+  name.textContent = message.name;
+  var time = document.createElement('small');
+  time.textContent = ' ' + message.time;
+  p.appendChild(name);
+  p.appendChild(time);
+  p.appendChild(document.createElement('br'));
+  message.text.split('\n').forEach(function (line, index) {
+    if (index > 0) {
+      p.appendChild(document.createElement('br'));
+    }
+    p.appendChild(document.createTextNode(line));
+  });
+  chat.appendChild(p);
+}
+
+function poll() {
+  if (document.hidden) {
+    setTimeout(poll, 500);
+    return;
+  }
+  fetch(chat.dataset.url + '?after=' + after)
+    .then(function (response) { return response.json(); })
+    .then(function (data) {
+      var note = document.getElementById('empty-note');
+      if (note && data.messages.length > 0) {
+        note.remove();
+      }
+      data.messages.forEach(function (message) {
+        addMessage(message);
+        after = message.id;
+      });
+    })
+    .catch(function () {})
+    .then(function () { setTimeout(poll, 500); });
+}
+
+poll();
+</script>
+{% endblock %}
