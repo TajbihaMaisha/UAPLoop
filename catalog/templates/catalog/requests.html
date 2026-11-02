@@ -10,7 +10,7 @@
     <td>{{ buy_request.buyer.phone }}</td>
     <td>{% if buy_request.amount %}Tk {{ buy_request.amount|floatformat:"-2" }}{% endif %}</td>
     <td>{{ buy_request.get_status_display }}</td>
-    <td><a href="{% url 'conversation' buy_request.pk %}">Chat</a></td>
+    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'conversation' buy_request.pk %}">Open chat</a></td>
     <td>
       {% if buy_request.status == 'pending' and not listing.is_sold %}
       <form method="post" action="{% url 'accept_request' buy_request.pk %}">{% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Accept</button></form>
@@ -22,5 +22,5 @@
   {% endfor %}
 </table>
 </div>
-<a href="{% url 'my_listings' %}">Back</a>
+<a class="btn btn-outline-secondary" href="{% url 'my_listings' %}">Back to my listings</a>
 {% endblock %}

@@ -13,7 +13,7 @@ class InboxTest(TestCase):
         category = Category.objects.create(name='Phones', slug='phones')
         self.listing = Listing.objects.create(
             seller=self.seller, category=category, title='Phone', description='x', listing_type='sell',
-            price=500, condition='good', status='approved',
+            handover_place='UAP main gate', price=500, condition='good', status='approved',
         )
         self.buy_request = BuyRequest.objects.create(listing=self.listing, buyer=self.buyer, amount=450)
         self.url = reverse('conversation', args=[self.buy_request.pk])

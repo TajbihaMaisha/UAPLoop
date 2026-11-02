@@ -33,6 +33,7 @@ class Listing(models.Model):
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     title = models.CharField(max_length=120)
     description = models.TextField()
+    handover_place = models.CharField(max_length=200)
     listing_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     rent_period = models.CharField(max_length=10, choices=PERIOD_CHOICES, null=True, blank=True)

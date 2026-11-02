@@ -10,12 +10,13 @@ MAX_SIZE = 5 * 1024 * 1024
 class ListingForm(forms.ModelForm):
     class Meta:
         model = Listing
-        fields = ['category', 'listing_type', 'title', 'description', 'price', 'rent_period', 'exchange_for', 'condition']
+        fields = ['category', 'listing_type', 'title', 'description', 'handover_place', 'price', 'rent_period', 'exchange_for', 'condition']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['category'].queryset = Category.objects.filter(is_active=True)
         self.fields['price'].label = 'Price (Tk)'
+        self.fields['handover_place'].help_text = 'Where would you prefer to hand over the item?'
         self.fields['rent_period'].help_text = 'Only for rent'
         self.fields['exchange_for'].help_text = 'Only for exchange'
         add_bootstrap(self)

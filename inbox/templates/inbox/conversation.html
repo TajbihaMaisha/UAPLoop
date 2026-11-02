@@ -4,9 +4,11 @@
 <p>
   Chat with {{ other.full_name }} ({{ other.phone }})<br>
   Buyer request{% if buy_request.amount %}: Tk {{ buy_request.amount|floatformat:"-2" }}{% endif %}
-  | <a href="{% url 'detail' buy_request.listing.pk %}">View item</a>
-  | <a href="{% url 'inbox' %}">Back to inbox</a>
 </p>
+<div class="d-flex flex-wrap gap-2 mb-3">
+  <a class="btn btn-outline-primary" href="{% url 'detail' buy_request.listing.pk %}">View item</a>
+  <a class="btn btn-outline-secondary" href="{% url 'inbox' %}">Back to inbox</a>
+</div>
 <div class="card mb-3">
   <div class="card-body" id="chat" data-url="{% url 'new_messages' buy_request.pk %}" data-after="{{ last_id }}">
     {% for message in chat_messages %}
@@ -23,7 +25,7 @@
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <button class="btn btn-primary" type="submit">Send</button>
+  <button class="btn btn-primary" type="submit">Send message</button>
 </form>
 <script>
 var chat = document.getElementById('chat');

@@ -18,11 +18,11 @@
       <form method="post" action="{% url 'mark_sold' listing.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Mark {{ listing.done_text|lower }}</button></form>
       {% endif %}
     </td>
-    <td><a href="{% url 'listing_requests' listing.pk %}">{{ listing.requests.count }}</a></td>
-    <td><a href="{% url 'remove_listing' listing.pk %}">Remove</a></td>
+    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'listing_requests' listing.pk %}">View requests ({{ listing.requests.count }})</a></td>
+    <td><a class="btn btn-sm btn-outline-danger" href="{% url 'remove_listing' listing.pk %}">Remove</a></td>
   </tr>
   {% empty %}
-  <tr><td colspan="6">You have no listings.</td></tr>
+  <tr><td colspan="6">You have no listings. <a class="btn btn-sm btn-primary ms-2" href="{% url 'new_listing' %}">Create a listing</a></td></tr>
   {% endfor %}
 </table>
 </div>

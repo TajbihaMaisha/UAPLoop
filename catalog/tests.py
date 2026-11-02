@@ -14,7 +14,8 @@ class ListingTest(TestCase):
     def test_post_then_approve(self):
         response = self.client.post(reverse('new_listing'), {
             'category': self.category.pk, 'listing_type': 'rent', 'title': 'Calculator',
-            'description': 'fx-991', 'price': '50', 'rent_period': 'day', 'condition': 'good',
+            'description': 'fx-991', 'handover_place': 'UAP main gate',
+            'price': '50', 'rent_period': 'day', 'condition': 'good',
         })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Listing.objects.public().count(), 0)
@@ -25,15 +26,38 @@ class ListingTest(TestCase):
     def test_rent_without_period_rejected(self):
         response = self.client.post(reverse('new_listing'), {
             'category': self.category.pk, 'listing_type': 'rent', 'title': 'Bat',
-            'description': 'x', 'price': '50', 'condition': 'good',
+            'description': 'x', 'handover_place': 'UAP main gate', 'price': '50', 'condition': 'good',
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Listing.objects.count(), 0)
 
+    def test_new_listing_requires_handover_place(self):
+        response = self.client.post(reverse('new_listing'), {
+            'category': self.category.pk, 'listing_type': 'sell', 'title': 'Calculator',
+            'description': 'fx-991', 'price': '500', 'condition': 'good',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response.context['form'], 'handover_place', 'This field is required.')
+        self.assertEqual(Listing.objects.count(), 0)
+
+    def test_handover_place_is_saved_and_shown_on_listing_pages(self):
+        response = self.client.post(reverse('new_listing'), {
+            'category': self.category.pk, 'listing_type': 'sell', 'title': 'Calculator',
+            'description': 'fx-991', 'price': '500', 'condition': 'good',
+            'handover_place': 'UAP main gate',
+        })
+        self.assertEqual(response.status_code, 302)
+        listing = Listing.objects.get()
+        self.assertEqual(listing.handover_place, 'UAP main gate')
+        listing.status = 'approved'
+        listing.save()
+        self.assertContains(self.client.get(reverse('browse')), 'UAP main gate')
+        self.assertContains(self.client.get(reverse('detail', args=[listing.pk])), 'UAP main gate')
+
     def test_donate_is_free_and_marked_donated(self):
         self.client.post(reverse('new_listing'), {
             'category': self.category.pk, 'listing_type': 'donate', 'title': 'Old book',
-            'description': 'x', 'price': '99', 'condition': 'good',
+            'description': 'x', 'handover_place': 'UAP main gate', 'price': '99', 'condition': 'good',
         })
         listing = Listing.objects.get()
         self.assertIsNone(listing.price)
@@ -50,7 +74,7 @@ class BuyReviewTest(TestCase):
         category = Category.objects.create(name='Phones', slug='phones')
         self.listing = Listing.objects.create(
             seller=self.seller, category=category, title='Phone', description='x', listing_type='sell',
-            price=500, condition='good', status='approved',
+            handover_place='UAP main gate', price=500, condition='good', status='approved',
         )
 
     def test_contact_hidden_until_request_then_seller_accepts(self):

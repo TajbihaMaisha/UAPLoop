@@ -35,6 +35,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=120)),
                 ('description', models.TextField()),
+                ('handover_place', models.CharField(max_length=200)),
                 ('listing_type', models.CharField(choices=[('sell', 'Sell'), ('exchange', 'Exchange'), ('rent', 'Rent'), ('donate', 'Donate')], max_length=10)),
                 ('price', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
                 ('rent_period', models.CharField(blank=True, choices=[('day', 'Day'), ('week', 'Week'), ('month', 'Month')], max_length=10, null=True)),

@@ -13,10 +13,10 @@
     {% else %}
     <td>Seller</td><td>{{ buy_request.buyer.full_name }}</td>
     {% endif %}
-    <td><a href="{% url 'conversation' buy_request.pk %}">Open chat</a></td>
+    <td><a class="btn btn-sm btn-outline-primary" href="{% url 'conversation' buy_request.pk %}">Open chat</a></td>
   </tr>
   {% empty %}
-  <tr><td colspan="4">No conversations yet. A chat opens when a buyer sends a buy request.</td></tr>
+  <tr><td colspan="4">No conversations yet. A chat opens when a buyer sends a request. <a class="btn btn-sm btn-outline-primary ms-2" href="{% url 'browse' %}">Browse listings</a></td></tr>
   {% endfor %}
 </table>
 </div>

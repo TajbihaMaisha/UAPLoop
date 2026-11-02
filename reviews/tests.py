@@ -13,7 +13,7 @@ class ReviewTest(TestCase):
         category = Category.objects.create(name='Phones', slug='phones')
         self.listing = Listing.objects.create(
             seller=self.seller, category=category, title='Phone', description='x', listing_type='sell',
-            price=500, condition='good', status='approved',
+            handover_place='UAP main gate', price=500, condition='good', status='approved',
         )
         self.url = reverse('detail', args=[self.listing.pk])
         self.review_url = reverse('add_review', args=[self.listing.pk])
