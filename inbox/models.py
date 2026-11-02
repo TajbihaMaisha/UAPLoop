@@ -12,3 +12,6 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['created_at']
+
+    def __str__(self):
+        return '%s: review by %s' % (self.listing, self.reviewer)

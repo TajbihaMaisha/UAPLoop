@@ -101,6 +101,9 @@ class ListingImage(models.Model):
     class Meta:
         ordering = ['position']
 
+    def __str__(self):
+        return 'Photo %s of %s' % (self.position, self.listing)
+
 
 class BuyRequest(models.Model):
     STATUS_CHOICES = [('pending', 'Pending'), ('accepted', 'Accepted')]
@@ -114,3 +117,6 @@ class BuyRequest(models.Model):
     class Meta:
         ordering = ['-created_at']
         constraints = [models.UniqueConstraint(fields=['listing', 'buyer'], name='one_request_per_buyer')]
+
+    def __str__(self):
+        return '%s: request by %s' % (self.listing, self.buyer)

@@ -17,3 +17,6 @@ class Review(models.Model):
     class Meta:
         ordering = ['-created_at']
         constraints = [models.UniqueConstraint(fields=['listing', 'reviewer'], name='one_review_per_buyer')]
+
+    def __str__(self):
+        return '%s: review by %s' % (self.listing, self.reviewer)
