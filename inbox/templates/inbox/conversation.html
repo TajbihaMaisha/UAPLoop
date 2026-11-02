@@ -6,7 +6,7 @@
   Buyer request{% if buy_request.amount %}: Tk {{ buy_request.amount|floatformat:"-2" }}{% endif %}
 </p>
 <div class="d-flex flex-wrap gap-2 mb-3">
-  <a class="btn btn-outline-primary" href="{% url 'detail' buy_request.listing.pk %}">View item</a>
+  {% if buy_request.listing.status == 'approved' %}<a class="btn btn-outline-primary" href="{% url 'detail' buy_request.listing.pk %}">View item</a>{% endif %}
   <a class="btn btn-outline-secondary" href="{% url 'inbox' %}">Back to inbox</a>
 </div>
 <div class="card mb-3">

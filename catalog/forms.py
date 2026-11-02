@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 
 from config.forms import add_bootstrap
 from .models import BuyRequest, Category, Listing
@@ -14,7 +15,7 @@ class ListingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['category'].queryset = Category.objects.filter(is_active=True)
+        self.fields['category'].queryset = Category.objects.filter(Q(is_active=True) | Q(pk=self.instance.category_id))
         self.fields['price'].label = 'Price (Tk)'
         self.fields['handover_place'].help_text = 'Where would you prefer to hand over the item?'
         self.fields['rent_period'].help_text = 'Only for rent'

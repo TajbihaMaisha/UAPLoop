@@ -95,6 +95,26 @@ def new_listing(request):
 
 
 @login_required
+def edit_listing(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    if listing.is_sold:
+        messages.error(request, 'A finished listing cannot be edited.')
+        return redirect('my_listings')
+    form = ListingForm(request.POST or None, instance=listing)
+    if form.is_valid():
+        if form.has_changed():
+            listing = form.save(commit=False)
+            listing.status = 'pending'
+            listing.reject_reason = ''
+            listing.reviewed_by = None
+            listing.reviewed_at = None
+            listing.save()
+            messages.success(request, 'Listing updated. It will appear after admin approval.')
+        return redirect('my_listings')
+    return render(request, 'catalog/edit.html', {'form': form})
+
+
+@login_required
 def my_listings(request):
     listings = Listing.objects.filter(seller=request.user)
     return render(request, 'catalog/mine.html', {'listings': listings})
